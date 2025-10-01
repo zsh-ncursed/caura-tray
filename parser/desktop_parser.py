@@ -124,8 +124,12 @@ class DesktopParser:
                         app_info['nodisplay'] = value.lower() in ('true', 'yes', '1')
                     elif key.lower() == 'categories':
                         # Parse categories (they are usually comma-separated)
-                        categories = [cat.strip().title() for cat in value.split(';') if cat.strip()]
-                        app_info['categories'] = categories
+                        try:
+                            categories = [cat.strip().title() for cat in value.split(';') if cat.strip()]
+                            app_info['categories'] = categories
+                        except:
+                            # If there's an error parsing categories, set to empty list
+                            app_info['categories'] = []
             
             # Only return info if we have both name and command
             if app_info['name'] and app_info['cmd']:

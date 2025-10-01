@@ -29,7 +29,13 @@ class ConfigManager:
         self.default_config = {
             "categories": {},
             "settings": {
-                "show_icons": True
+                "show_icons": True,
+                "show_quick_launch": True,
+                "quick_launch_apps": {
+                    "terminal": "x-terminal-emulator",
+                    "browser": "x-www-browser", 
+                    "file_manager": "xdg-open ~"
+                }
             }
         }
         
@@ -83,6 +89,35 @@ class ConfigManager:
             logging.warning("Categories in config are not a dictionary, using default")
             config["categories"] = {}
         
+            # Remove theme setting since it's no longer used
+            if "settings" in config and "theme" in config["settings"]:
+                del config["settings"]["theme"]
+            
+            # Ensure quick launch settings exist
+            if "settings" not in config:
+                config["settings"] = {}
+            
+            settings = config["settings"]
+            if "show_quick_launch" not in settings:
+                settings["show_quick_launch"] = True
+            
+            if "quick_launch_apps" not in settings:
+                settings["quick_launch_apps"] = {
+                    "terminal": "x-terminal-emulator",
+                    "browser": "x-www-browser", 
+                    "file_manager": "xdg-open ~"
+                }
+            else:
+                # Ensure all required quick launch apps are present
+                quick_launch_defaults = {
+                    "terminal": "x-terminal-emulator",
+                    "browser": "x-www-browser", 
+                    "file_manager": "xdg-open ~"
+                }
+                for key, default_value in quick_launch_defaults.items():
+                    if key not in settings["quick_launch_apps"]:
+                        settings["quick_launch_apps"][key] = default_value
+            
         return config
     
     def save_config(self, config=None):
@@ -119,7 +154,7 @@ class ConfigManager:
         
         # Check if the application already exists in the category
         for app in self.config["categories"][category_name]:
-            if app['name'] == app_info['name'] and app['cmd'] == app_info['cmd']:
+            if app.get('name') == app_info.get('name') and app.get('cmd') == app_info.get('cmd'):
                 return  # App already exists
         
         self.config["categories"][category_name].append(app_info)
@@ -140,7 +175,7 @@ class ConfigManager:
         if category_name in self.config["categories"]:
             self.config["categories"][category_name] = [
                 app for app in self.config["categories"][category_name]
-                if app['name'] != app_name
+                if app.get('name') != app_name
             ]
             self.save_config()
             
@@ -198,7 +233,7 @@ class ConfigManager:
         """
         if category_name in self.config["categories"]:
             for i, app in enumerate(self.config["categories"][category_name]):
-                if app['name'] == old_app_name:
+                if app.get('name') == old_app_name:
                     self.config["categories"][category_name][i] = new_app_info
                     self.save_config()
                     

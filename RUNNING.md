@@ -39,9 +39,11 @@ Once running, Caura Tray provides:
 
 - System tray icon with context menu
 - Categorized application launcher with icons
+- Quick launch applications (Terminal, Web Browser, File Manager) at the top of the menu
 - Categories: General, Development, Games, Graphics, Multimedia, Internet, Office, Settings, System
 - Each application in a single category with appropriate icon
 - Settings dialog to toggle icon visibility
+- Settings dialog to configure quick launch applications and toggle their visibility
 - Regenerate function to import new .desktop files
 - JSON-based configuration management
 - DBus integration for system events

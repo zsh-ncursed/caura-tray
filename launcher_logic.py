@@ -68,7 +68,14 @@ class ApplicationLauncher:
         dangerous_patterns = [
             'rm -rf',
             'rm -rf /',
-            ':(){:|:&};'
+            ':(){:|:&};',
+            '&&',
+            '||',
+            ';',
+            '`',
+            '$(',
+            'eval',
+            'exec'
         ]
         
         command_lower = command.lower()

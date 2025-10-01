@@ -61,12 +61,6 @@ class TrayLauncherApp:
         self.launcher_logic = ApplicationLauncher()
         self.dbus_integration = DBusIntegration()
         
-        # Initialize components
-        self.config_manager = ConfigManager()
-        self.desktop_parser = DesktopParser()
-        self.launcher_logic = ApplicationLauncher()
-        self.dbus_integration = DBusIntegration()
-        
         # Initialize tray icon (needed for config change callback)
         self.tray_icon = GtkTrayIcon(
             on_open_launcher=self.toggle_main_window,

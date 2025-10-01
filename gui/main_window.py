@@ -100,6 +100,69 @@ class MainWindow:
         # Get applications from config
         self.original_apps = self.config_manager.get_all_applications()
         
+        # Get settings
+        settings = self.config_manager.config.get("settings", {})
+        show_quick_launch = settings.get("show_quick_launch", True)
+        quick_launch_apps = settings.get("quick_launch_apps", {
+            "terminal": "x-terminal-emulator",
+            "browser": "x-www-browser",
+            "file_manager": "xdg-open ~"
+        })
+        
+        # Add quick launch applications at the top if enabled
+        if show_quick_launch and any(quick_launch_apps.values()):
+            # Create a section for quick launch apps
+            quick_launch_expander = Gtk.Expander()
+            quick_launch_expander.set_label("Quick Launch")
+            
+            # Create a vertical box to hold the quick launch apps
+            quick_launch_vbox = Gtk.VBox()
+            
+            # Terminal quick launch
+            if quick_launch_apps.get("terminal"):
+                hbox = Gtk.HBox()
+                label = Gtk.Label(label="Terminal")
+                label.set_xalign(0)
+                label.set_ellipsize(Pango.EllipsizeMode.END)
+                hbox.pack_start(label, True, True, 5)
+                
+                btn = Gtk.Button(label="Launch")
+                btn.connect("clicked", self.on_launch_app, quick_launch_apps["terminal"])
+                hbox.pack_end(btn, False, False, 5)
+                
+                quick_launch_vbox.pack_start(hbox, False, False, 2)
+            
+            # Browser quick launch
+            if quick_launch_apps.get("browser"):
+                hbox = Gtk.HBox()
+                label = Gtk.Label(label="Web Browser")
+                label.set_xalign(0)
+                label.set_ellipsize(Pango.EllipsizeMode.END)
+                hbox.pack_start(label, True, True, 5)
+                
+                btn = Gtk.Button(label="Launch")
+                btn.connect("clicked", self.on_launch_app, quick_launch_apps["browser"])
+                hbox.pack_end(btn, False, False, 5)
+                
+                quick_launch_vbox.pack_start(hbox, False, False, 2)
+            
+            # File manager quick launch
+            if quick_launch_apps.get("file_manager"):
+                hbox = Gtk.HBox()
+                label = Gtk.Label(label="File Manager")
+                label.set_xalign(0)
+                label.set_ellipsize(Pango.EllipsizeMode.END)
+                hbox.pack_start(label, True, True, 5)
+                
+                btn = Gtk.Button(label="Launch")
+                btn.connect("clicked", self.on_launch_app, quick_launch_apps["file_manager"])
+                hbox.pack_end(btn, False, False, 5)
+                
+                quick_launch_vbox.pack_start(hbox, False, False, 2)
+            
+            quick_launch_expander.add(quick_launch_vbox)
+            self.list_box.add(quick_launch_expander)
+        
         # If there's a current search, show search results only
         if self.current_search:
             self.show_search_results()
@@ -156,11 +219,58 @@ class MainWindow:
         search_term = self.current_search.lower()
         matched_apps = []
         
+        # Get quick launch apps for search
+        settings = self.config_manager.config.get("settings", {})
+        show_quick_launch = settings.get("show_quick_launch", True)
+        quick_launch_apps = settings.get("quick_launch_apps", {
+            "terminal": "x-terminal-emulator",
+            "browser": "x-www-browser",
+            "file_manager": "xdg-open ~"
+        })
+        
+        # Check quick launch apps for matches if enabled
+        quick_launch_matches = []
+        if show_quick_launch:
+            if quick_launch_apps.get("terminal") and search_term in "terminal".lower():
+                quick_launch_matches.append(("Quick Launch", {
+                    'name': 'Terminal',
+                    'cmd': quick_launch_apps["terminal"]
+                }))
+            if quick_launch_apps.get("browser") and search_term in "web browser".lower():
+                quick_launch_matches.append(("Quick Launch", {
+                    'name': 'Web Browser',
+                    'cmd': quick_launch_apps["browser"]
+                }))
+            if quick_launch_apps.get("file_manager") and search_term in "file manager".lower():
+                quick_launch_matches.append(("Quick Launch", {
+                    'name': 'File Manager',
+                    'cmd': quick_launch_apps["file_manager"]
+                }))
+
         for category_name, apps in self.original_apps.items():
             for app in apps:
                 if (search_term in app['name'].lower() or 
                     search_term in app['cmd'].lower()):
                     matched_apps.append((category_name, app))
+        
+        # Add quick launch matches first
+        for category_name, app in quick_launch_matches:
+            # Create a horizontal box for each app with name and launch button
+            hbox = Gtk.HBox()
+            
+            # App name label with category info
+            label = Gtk.Label(label=f"{app['name']} ({category_name})")
+            label.set_xalign(0)  # Left align
+            label.set_ellipsize(Pango.EllipsizeMode.END)  # Ellipsize long names
+            hbox.pack_start(label, True, True, 5)
+            
+            # Launch button
+            btn = Gtk.Button(label="Launch")
+            btn.connect("clicked", self.on_launch_app, app['cmd'])
+            hbox.pack_end(btn, False, False, 5)
+            
+            # Add the horizontal box to the list box
+            self.list_box.add(hbox)
         
         # Add matched apps to the list box
         for category_name, app in matched_apps:

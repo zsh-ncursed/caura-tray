@@ -58,7 +58,59 @@ class GtkTrayIcon:
         # Get settings
         settings = self.config_manager.config.get("settings", {})
         show_icons = settings.get("show_icons", True)
+        show_quick_launch = settings.get("show_quick_launch", True)
+        quick_launch_apps = settings.get("quick_launch_apps", {
+            "terminal": "x-terminal-emulator",
+            "browser": "x-www-browser",
+            "file_manager": "xdg-open ~"
+        })
         
+        # Add quick launch applications at the top if enabled
+        if show_quick_launch and quick_launch_apps:
+            # Terminal quick launch
+            if quick_launch_apps.get("terminal"):
+                terminal_item = Gtk.ImageMenuItem()
+                terminal_item.set_label("Terminal")
+                
+                if show_icons:
+                    icon = Gtk.Image.new_from_icon_name("utilities-terminal", Gtk.IconSize.MENU)
+                    terminal_item.set_image(icon)
+                    terminal_item.set_always_show_image(True)
+                
+                terminal_item.connect("activate", self._on_app_launch, quick_launch_apps["terminal"])
+                menu.append(terminal_item)
+            
+            # Browser quick launch
+            if quick_launch_apps.get("browser"):
+                browser_item = Gtk.ImageMenuItem()
+                browser_item.set_label("Web Browser")
+                
+                if show_icons:
+                    icon = Gtk.Image.new_from_icon_name("web-browser", Gtk.IconSize.MENU)
+                    browser_item.set_image(icon)
+                    browser_item.set_always_show_image(True)
+                
+                browser_item.connect("activate", self._on_app_launch, quick_launch_apps["browser"])
+                menu.append(browser_item)
+            
+            # File manager quick launch
+            if quick_launch_apps.get("file_manager"):
+                fm_item = Gtk.ImageMenuItem()
+                fm_item.set_label("File Manager")
+                
+                if show_icons:
+                    icon = Gtk.Image.new_from_icon_name("system-file-manager", Gtk.IconSize.MENU)
+                    fm_item.set_image(icon)
+                    fm_item.set_always_show_image(True)
+                
+                fm_item.connect("activate", self._on_app_launch, quick_launch_apps["file_manager"])
+                menu.append(fm_item)
+            
+            # Add separator after quick launch apps
+            if quick_launch_apps.get("terminal") or quick_launch_apps.get("browser") or quick_launch_apps.get("file_manager"):
+                separator = Gtk.SeparatorMenuItem()
+                menu.append(separator)
+
         if categories:
             # Create menu items for each category
             for category_name, apps in categories.items():

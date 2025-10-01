@@ -23,7 +23,7 @@ echo "Checking for required dependencies..."
 
 # Check for Python modules
 MISSING_DEPS=()
-REQUIRED_MODULES=("gi" "pystray" "dbus" "PIL")
+REQUIRED_MODULES=("gi" "dbus" "PIL")
 
 for module in "${REQUIRED_MODULES[@]}"; do
     if ! python -c "import $module" 2>/dev/null; then
