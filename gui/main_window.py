@@ -106,7 +106,9 @@ class MainWindow:
         quick_launch_apps = settings.get("quick_launch_apps", {
             "terminal": "x-terminal-emulator",
             "browser": "x-www-browser",
-            "file_manager": "xdg-open ~"
+            "file_manager": "xdg-open ~",
+            "mail_client": "xdg-email",
+            "messenger": "discord"
         })
         
         # Add quick launch applications at the top if enabled
@@ -156,6 +158,34 @@ class MainWindow:
                 
                 btn = Gtk.Button(label="Launch")
                 btn.connect("clicked", self.on_launch_app, quick_launch_apps["file_manager"])
+                hbox.pack_end(btn, False, False, 5)
+                
+                quick_launch_vbox.pack_start(hbox, False, False, 2)
+            
+            # Mail client quick launch
+            if quick_launch_apps.get("mail_client"):
+                hbox = Gtk.HBox()
+                label = Gtk.Label(label="Mail Client")
+                label.set_xalign(0)
+                label.set_ellipsize(Pango.EllipsizeMode.END)
+                hbox.pack_start(label, True, True, 5)
+                
+                btn = Gtk.Button(label="Launch")
+                btn.connect("clicked", self.on_launch_app, quick_launch_apps["mail_client"])
+                hbox.pack_end(btn, False, False, 5)
+                
+                quick_launch_vbox.pack_start(hbox, False, False, 2)
+            
+            # Messenger quick launch
+            if quick_launch_apps.get("messenger"):
+                hbox = Gtk.HBox()
+                label = Gtk.Label(label="Messenger")
+                label.set_xalign(0)
+                label.set_ellipsize(Pango.EllipsizeMode.END)
+                hbox.pack_start(label, True, True, 5)
+                
+                btn = Gtk.Button(label="Launch")
+                btn.connect("clicked", self.on_launch_app, quick_launch_apps["messenger"])
                 hbox.pack_end(btn, False, False, 5)
                 
                 quick_launch_vbox.pack_start(hbox, False, False, 2)
@@ -245,6 +275,16 @@ class MainWindow:
                 quick_launch_matches.append(("Quick Launch", {
                     'name': 'File Manager',
                     'cmd': quick_launch_apps["file_manager"]
+                }))
+            if quick_launch_apps.get("mail_client") and search_term in "mail client".lower():
+                quick_launch_matches.append(("Quick Launch", {
+                    'name': 'Mail Client',
+                    'cmd': quick_launch_apps["mail_client"]
+                }))
+            if quick_launch_apps.get("messenger") and search_term in "messenger".lower():
+                quick_launch_matches.append(("Quick Launch", {
+                    'name': 'Messenger',
+                    'cmd': quick_launch_apps["messenger"]
                 }))
 
         for category_name, apps in self.original_apps.items():

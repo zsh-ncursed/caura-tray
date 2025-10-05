@@ -62,7 +62,9 @@ class GtkTrayIcon:
         quick_launch_apps = settings.get("quick_launch_apps", {
             "terminal": "x-terminal-emulator",
             "browser": "x-www-browser",
-            "file_manager": "xdg-open ~"
+            "file_manager": "xdg-open ~",
+            "mail_client": "xdg-email",
+            "messenger": "discord"
         })
         
         # Add quick launch applications at the top if enabled
@@ -106,8 +108,34 @@ class GtkTrayIcon:
                 fm_item.connect("activate", self._on_app_launch, quick_launch_apps["file_manager"])
                 menu.append(fm_item)
             
+            # Mail client quick launch
+            if quick_launch_apps.get("mail_client"):
+                mail_item = Gtk.ImageMenuItem()
+                mail_item.set_label("Mail Client")
+                
+                if show_icons:
+                    icon = Gtk.Image.new_from_icon_name("internet-mail", Gtk.IconSize.MENU)
+                    mail_item.set_image(icon)
+                    mail_item.set_always_show_image(True)
+                
+                mail_item.connect("activate", self._on_app_launch, quick_launch_apps["mail_client"])
+                menu.append(mail_item)
+            
+            # Messenger quick launch
+            if quick_launch_apps.get("messenger"):
+                msg_item = Gtk.ImageMenuItem()
+                msg_item.set_label("Messenger")
+                
+                if show_icons:
+                    icon = Gtk.Image.new_from_icon_name("internet-messenger", Gtk.IconSize.MENU)
+                    msg_item.set_image(icon)
+                    msg_item.set_always_show_image(True)
+                
+                msg_item.connect("activate", self._on_app_launch, quick_launch_apps["messenger"])
+                menu.append(msg_item)
+            
             # Add separator after quick launch apps
-            if quick_launch_apps.get("terminal") or quick_launch_apps.get("browser") or quick_launch_apps.get("file_manager"):
+            if any(quick_launch_apps.get(app) for app in ["terminal", "browser", "file_manager", "mail_client", "messenger"]):
                 separator = Gtk.SeparatorMenuItem()
                 menu.append(separator)
 

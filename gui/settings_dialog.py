@@ -49,7 +49,9 @@ class SettingsDialog:
         quick_launch_apps = settings.get("quick_launch_apps", {
             "terminal": "x-terminal-emulator",
             "browser": "x-www-browser", 
-            "file_manager": "xdg-open ~"
+            "file_manager": "xdg-open ~",
+            "mail_client": "xdg-email",
+            "messenger": "discord"
         })
         
         # Terminal command entry
@@ -70,6 +72,18 @@ class SettingsDialog:
         self.file_manager_entry = Gtk.Entry()
         self.file_manager_entry.set_text(quick_launch_apps.get("file_manager", "xdg-open ~"))
         
+        # Mail client command entry
+        mail_client_label = Gtk.Label(label="Mail client command:")
+        mail_client_label.set_xalign(0)
+        self.mail_client_entry = Gtk.Entry()
+        self.mail_client_entry.set_text(quick_launch_apps.get("mail_client", "xdg-email"))
+        
+        # Messenger command entry
+        messenger_label = Gtk.Label(label="Messenger command:")
+        messenger_label.set_xalign(0)
+        self.messenger_entry = Gtk.Entry()
+        self.messenger_entry.set_text(quick_launch_apps.get("messenger", "discord"))
+        
         # Pack the widgets
         box.pack_start(self.show_icons_toggle, False, False, 5)
         box.pack_start(self.show_quick_launch_toggle, False, False, 5)
@@ -80,6 +94,10 @@ class SettingsDialog:
         box.pack_start(self.browser_entry, False, False, 5)
         box.pack_start(file_manager_label, False, False, 5)
         box.pack_start(self.file_manager_entry, False, False, 5)
+        box.pack_start(mail_client_label, False, False, 5)
+        box.pack_start(self.mail_client_entry, False, False, 5)
+        box.pack_start(messenger_label, False, False, 5)
+        box.pack_start(self.messenger_entry, False, False, 5)
         
         # Show all widgets
         box.show_all()
@@ -100,6 +118,8 @@ class SettingsDialog:
             terminal_cmd = self.terminal_entry.get_text()
             browser_cmd = self.browser_entry.get_text()
             file_manager_cmd = self.file_manager_entry.get_text()
+            mail_client_cmd = self.mail_client_entry.get_text()
+            messenger_cmd = self.messenger_entry.get_text()
             
             # Update settings in config
             if "settings" not in self.config_manager.config:
@@ -110,7 +130,9 @@ class SettingsDialog:
             self.config_manager.config["settings"]["quick_launch_apps"] = {
                 "terminal": terminal_cmd,
                 "browser": browser_cmd,
-                "file_manager": file_manager_cmd
+                "file_manager": file_manager_cmd,
+                "mail_client": mail_client_cmd,
+                "messenger": messenger_cmd
             }
             
             # Save the config

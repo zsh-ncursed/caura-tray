@@ -8,7 +8,7 @@ Caura Tray is a desktop launcher for Linux that resides in the system tray. It p
 - Application categories: General, Development, Games, Graphics, Multimedia, Internet, Office, Settings, System
 - Icons for categories and applications
 - Dropdown menu with applications by category
-- Quick launch applications (Terminal, Web Browser, File Manager) at the top of the menu
+- Quick launch applications (Terminal, Web Browser, File Manager, Mail Client, Messenger) at the top of the menu
 - Icon visibility settings
 - Show/hide quick launch applications setting
 - Customizable quick launch commands

@@ -34,7 +34,9 @@ class ConfigManager:
                 "quick_launch_apps": {
                     "terminal": "x-terminal-emulator",
                     "browser": "x-www-browser", 
-                    "file_manager": "xdg-open ~"
+                    "file_manager": "xdg-open ~",
+                    "mail_client": "xdg-email",
+                    "messenger": "discord"  # или другой популярный мессенджер по умолчанию
                 }
             }
         }
@@ -105,14 +107,18 @@ class ConfigManager:
                 settings["quick_launch_apps"] = {
                     "terminal": "x-terminal-emulator",
                     "browser": "x-www-browser", 
-                    "file_manager": "xdg-open ~"
+                    "file_manager": "xdg-open ~",
+                    "mail_client": "xdg-email",
+                    "messenger": "discord"
                 }
             else:
                 # Ensure all required quick launch apps are present
                 quick_launch_defaults = {
                     "terminal": "x-terminal-emulator",
                     "browser": "x-www-browser", 
-                    "file_manager": "xdg-open ~"
+                    "file_manager": "xdg-open ~",
+                    "mail_client": "xdg-email",
+                    "messenger": "discord"
                 }
                 for key, default_value in quick_launch_defaults.items():
                     if key not in settings["quick_launch_apps"]:
