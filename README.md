@@ -50,6 +50,8 @@ Caura Tray is a desktop launcher for Linux that resides in the system tray. It p
 ## Settings
 
 - **Show icons in menu**: Enable/Disable icon display in menu
+- **Show quick launch applications**: Toggle visibility of quick launch section
+- **Quick launch commands**: Configure commands for Terminal, Web Browser, File Manager, Mail Client, and Messenger
 - Settings are saved in `~/.local/share/tray_launcher/config.json`
 
 ## Project Structure

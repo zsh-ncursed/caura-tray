@@ -59,7 +59,10 @@ The configuration file is stored at `~/.local/share/tray_launcher/config.json`
 3. Hover over a category to see its applications
 4. Click an application to launch it
 5. Use "Regenerate" to scan and import new .desktop files
-6. Use "Settings" to toggle icon visibility on/off
+6. Use "Settings" to configure:
+   - Icon visibility
+   - Quick launch applications visibility
+   - Commands for Terminal, Web Browser, File Manager, Mail Client, and Messenger
 
 ## Troubleshooting
 
