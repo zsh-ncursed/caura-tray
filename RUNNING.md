@@ -44,7 +44,7 @@ Once running, Caura Tray provides:
 - Each application in a single category with appropriate icon
 - Settings dialog to toggle icon visibility
 - Settings dialog to configure quick launch applications and toggle their visibility
-- Regenerate function to import new .desktop files
+- Regenerate function to import new .desktop files and clean up non-existent applications
 - JSON-based configuration management
 - DBus integration for system events
 
@@ -58,7 +58,7 @@ The configuration file is stored at `~/.local/share/tray_launcher/config.json`
 2. Click the icon to open the menu with application categories
 3. Hover over a category to see its applications
 4. Click an application to launch it
-5. Use "Regenerate" to scan and import new .desktop files
+5. Use "Regenerate" to scan and import new .desktop files and clean up non-existent applications
 6. Use "Settings" to configure:
    - Icon visibility
    - Quick launch applications visibility

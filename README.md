@@ -12,7 +12,7 @@ Caura Tray is a desktop launcher for Linux that resides in the system tray. It p
 - Icon visibility settings
 - Show/hide quick launch applications setting
 - Customizable quick launch commands
-- Regenerate function for importing .desktop files
+- Regenerate function for importing .desktop files and cleaning up non-existent applications
 - Safe application launching
 - DBus integration
 

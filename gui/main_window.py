@@ -356,6 +356,7 @@ class MainWindow:
     def on_regenerate_clicked(self, button):
         """
         Handle the Regenerate button click to import .desktop files.
+        Also removes entries for applications that no longer exist.
         """
         # Get all system applications
         system_apps = self.desktop_parser.scan_applications()
@@ -376,8 +377,77 @@ class MainWindow:
             if not exists:
                 self.config_manager.add_application_to_category("System Apps", app)
         
+        # Clean up non-existent applications
+        removed_count = self._remove_nonexistent_apps()
+        
+        if removed_count > 0:
+            print(f"Removed {removed_count} non-existent applications")
+        
         # Refresh the display
         self.refresh_display()
+    
+    def _remove_nonexistent_apps(self):
+        """
+        Remove applications from config that no longer exist on the system.
+        Returns the number of removed applications.
+        """
+        removed_count = 0
+        categories = self.config_manager.config['categories'].copy()
+        
+        for category_name, apps in categories.items():
+            apps_to_remove = []
+            
+            for app in apps:
+                cmd = app.get('cmd', '').strip()
+                
+                if not cmd:
+                    apps_to_remove.append(app)
+                    continue
+                
+                # Parse command to get the executable name
+                import shlex
+                try:
+                    cmd_parts = shlex.split(cmd)
+                    executable = cmd_parts[0]
+                except:
+                    # If command parsing fails, mark for removal
+                    apps_to_remove.append(app)
+                    continue
+                
+                # Check if the executable exists in PATH or as absolute path
+                import os
+                if not self._check_executable_exists(executable):
+                    apps_to_remove.append(app)
+            
+            # Remove non-existent apps from this category
+            for app in apps_to_remove:
+                self.config_manager.remove_application_from_category(category_name, app['name'])
+                removed_count += 1
+        
+        return removed_count
+    
+    def _check_executable_exists(self, executable):
+        """
+        Check if an executable exists in PATH or as absolute path.
+        
+        Args:
+            executable (str): The executable name or path
+            
+        Returns:
+            bool: True if executable exists, False otherwise
+        """
+        import os
+        
+        if os.path.isabs(executable):
+            # Absolute path
+            return os.path.isfile(executable) and os.access(executable, os.X_OK)
+        else:
+            # Search in PATH
+            for path_dir in os.environ.get("PATH", "").split(os.pathsep):
+                exe_path = os.path.join(path_dir, executable)
+                if os.path.isfile(exe_path) and os.access(exe_path, os.X_OK):
+                    return True
+            return False
     
     def on_edit_config_clicked(self, button):
         """

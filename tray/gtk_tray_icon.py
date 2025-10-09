@@ -310,6 +310,7 @@ class GtkTrayIcon:
         """
         Callback for the 'Regenerate' menu item.
         Scans for .desktop files and adds them to predefined categories.
+        Also removes entries for applications that no longer exist.
         """
         if self.desktop_parser and self.config_manager:
             # Get all system applications organized by mapped categories
@@ -332,12 +333,81 @@ class GtkTrayIcon:
                         self.config_manager.add_application_to_category(category_name, app)
                         imported_count += 1
             
-            if imported_count > 0:
-                print(f"Added {imported_count} new applications from .desktop files")
-                # Update the menu to show new apps
+            # Clean up non-existent applications
+            removed_count = self._remove_nonexistent_apps()
+            
+            if imported_count > 0 or removed_count > 0:
+                if imported_count > 0:
+                    print(f"Added {imported_count} new applications from .desktop files")
+                if removed_count > 0:
+                    print(f"Removed {removed_count} non-existent applications")
+                # Update the menu to show new apps and remove non-existent ones
                 self.update_menu()
             else:
-                print("No new applications were found or all applications were already imported")
+                print("No changes were made")
+    
+    def _remove_nonexistent_apps(self):
+        """
+        Remove applications from config that no longer exist on the system.
+        Returns the number of removed applications.
+        """
+        removed_count = 0
+        categories = self.config_manager.config['categories'].copy()
+        
+        for category_name, apps in categories.items():
+            apps_to_remove = []
+            
+            for app in apps:
+                cmd = app.get('cmd', '').strip()
+                
+                if not cmd:
+                    apps_to_remove.append(app)
+                    continue
+                
+                # Parse command to get the executable name
+                import shlex
+                try:
+                    cmd_parts = shlex.split(cmd)
+                    executable = cmd_parts[0]
+                except:
+                    # If command parsing fails, mark for removal
+                    apps_to_remove.append(app)
+                    continue
+                
+                # Check if the executable exists in PATH or as absolute path
+                import os
+                if not self._check_executable_exists(executable):
+                    apps_to_remove.append(app)
+            
+            # Remove non-existent apps from this category
+            for app in apps_to_remove:
+                self.config_manager.remove_application_from_category(category_name, app['name'])
+                removed_count += 1
+        
+        return removed_count
+    
+    def _check_executable_exists(self, executable):
+        """
+        Check if an executable exists in PATH or as absolute path.
+        
+        Args:
+            executable (str): The executable name or path
+            
+        Returns:
+            bool: True if executable exists, False otherwise
+        """
+        import os
+        
+        if os.path.isabs(executable):
+            # Absolute path
+            return os.path.isfile(executable) and os.access(executable, os.X_OK)
+        else:
+            # Search in PATH
+            for path_dir in os.environ.get("PATH", "").split(os.pathsep):
+                exe_path = os.path.join(path_dir, executable)
+                if os.path.isfile(exe_path) and os.access(exe_path, os.X_OK):
+                    return True
+            return False
     
     def _on_settings(self, widget):
         """
